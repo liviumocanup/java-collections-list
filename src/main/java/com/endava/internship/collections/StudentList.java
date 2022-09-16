@@ -13,8 +13,14 @@ public class StudentList implements List<Student> {
     }
 
     public StudentList(int capacity) {
+        if(capacity<0)
+            throw new IllegalArgumentException("Illegal Capacity: " + capacity);
         this.capacity = capacity;
         students = new Student[capacity];
+    }
+
+    public StudentList(Collection<Student> studentsCollection) {
+        addAll(studentsCollection);
     }
 
     @Override
@@ -34,7 +40,7 @@ public class StudentList implements List<Student> {
 
     @Override
     public Iterator<Student> iterator() {
-        return new Itr();
+        return new StudentIterator();
     }
 
     @Override
@@ -42,6 +48,7 @@ public class StudentList implements List<Student> {
         return Arrays.copyOf(students, size);
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T[] toArray(T[] ts) {
         return (T[]) Arrays.copyOf(students, size, ts.getClass());
@@ -49,24 +56,28 @@ public class StudentList implements List<Student> {
 
     @Override
     public boolean add(Student student) {
-        addCapacity();
+        checkCapacity();
         students[size] = student;
         size++;
         return true;
     }
 
-    private void addCapacity(){
-        addCapacity(1);
+    private void checkCapacity(){
+        checkCapacity(1);
     }
-    private void addCapacity(int min){
+    private void checkCapacity(int min){
         if(size+min >= capacity) {
             if ((capacity * 2) > (size + min)) {
                 capacity *= 2;
             } else {
                 capacity += min;
             }
-            students = Arrays.copyOf(students, capacity);
+            resizeArray();
         }
+    }
+
+    private void resizeArray(){
+        students = Arrays.copyOf(students, capacity);
     }
 
     @Override
@@ -89,18 +100,18 @@ public class StudentList implements List<Student> {
 
     @Override
     public Student get(int i) {
-        indexInRange(i);
+        indexInRange(i, size-1);
         return students[i];
     }
 
-    private void indexInRange(int i){
-        if(!(i>=0 && i<size))
+    private void indexInRange(int i, int upperLimit){
+        if(i< 0 || i>upperLimit)
             throw new IndexOutOfBoundsException();
     }
 
     @Override
     public Student set(int i, Student student) {
-        indexInRange(i);
+        indexInRange(i, size-1);
         Student replacedStudent = students[i];
         students[i] = student;
         return replacedStudent;
@@ -108,8 +119,8 @@ public class StudentList implements List<Student> {
 
     @Override
     public void add(int i, Student student) {
-        indexInRange(i);
-        addCapacity();
+        indexInRange(i, size);
+        checkCapacity();
 
         for(int k=size; k>i; k--){
             students[k] = students[k-1];
@@ -120,7 +131,7 @@ public class StudentList implements List<Student> {
 
     @Override
     public Student remove(int i) {
-        indexInRange(i);
+        indexInRange(i, size-1);
         Student removedStudent = students[i];
 
         for(int k=i; k<size-1; k++){
@@ -172,13 +183,13 @@ public class StudentList implements List<Student> {
     }
 
     public ListIterator<Student> listIterator() {
-        return new ListItr();
+        return new ListStudentIterator();
     }
 
     @Override
     public ListIterator<Student> listIterator(int i) {
-        indexInRange(i);
-        return new ListItr(i);
+        indexInRange(i, size-1);
+        return new ListStudentIterator(i);
     }
 
     @Override
@@ -198,7 +209,7 @@ public class StudentList implements List<Student> {
             return false;
         }
 
-        addCapacity(len);
+        checkCapacity(len);
 
         for(int i=size; i < size+len; i++){
             students[i] = c[i-size];
@@ -209,26 +220,67 @@ public class StudentList implements List<Student> {
 
     @Override
     public boolean containsAll(Collection<?> collection) {
-        //Ignore this for homework
-        throw new UnsupportedOperationException();
+        for (Object o : collection) {
+            if (indexOf(o) < 0)
+                return false;
+        }
+        return true;
     }
 
     @Override
     public boolean addAll(int i, Collection<? extends Student> collection) {
-        //Ignore this for homework
-        throw new UnsupportedOperationException();
+        Student[] c = collection.toArray(new Student[0]);
+        int len = c.length;
+        if(len == 0){
+            return false;
+        }
+
+        indexInRange(i, size);
+        checkCapacity(len);
+
+        for(int times = 0; times < len; times++) {
+            for (int k = size + len; k > i; k--) {
+                students[k] = students[k - 1];
+            }
+        }
+        for(int k = i; k < i+len; k++){
+            students[k] = c[k-i];
+        }
+
+        size += len;
+        return true;
     }
 
     @Override
     public boolean removeAll(Collection<?> collection) {
-        //Ignore this for homework
-        throw new UnsupportedOperationException();
+        boolean listChanged = false;
+        for (Object o : collection) {
+            if(indexOf(o)>=0) {
+                remove(o);
+                listChanged = true;
+            }
+        }
+        return listChanged;
     }
 
     @Override
     public boolean retainAll(Collection<?> collection) {
-        //Ignore this for homework
-        throw new UnsupportedOperationException();
+        boolean contained = false;
+        StudentList toExclude = new StudentList();
+
+        for (Student s : students) {
+            for(Object o : collection){
+                if (s.equals(o)) {
+                    contained = true;
+                    break;
+                }
+            }
+            if(!contained){
+                toExclude.add(s);
+            }else contained = false;
+        }
+
+        return removeAll(toExclude);
     }
 
     @Override
@@ -236,14 +288,14 @@ public class StudentList implements List<Student> {
         return "StudentList{" +
                 "size=" + size +
                 ", capacity=" + capacity +
-                ", students=" + Arrays.toString(students) +
+                ", students=" + Arrays.toString(Arrays.copyOf(students, size)) +
                 '}';
     }
 
-    private class Itr implements Iterator<Student>{
+    private class StudentIterator implements Iterator<Student>{
         int cursor;
 
-        public Itr() {
+        StudentIterator() {
         }
 
         @Override
@@ -253,7 +305,7 @@ public class StudentList implements List<Student> {
 
         @Override
         public Student next() {
-            if (cursor >= size)
+            if (!hasNext())
                 throw new NoSuchElementException();
             return students[cursor++];
         }
@@ -268,11 +320,11 @@ public class StudentList implements List<Student> {
         }
     }
 
-    private class ListItr extends Itr implements ListIterator<Student>{
-        public ListItr() {
+    private class ListStudentIterator extends StudentIterator implements ListIterator<Student>{
+        public ListStudentIterator() {
         }
 
-        public ListItr(int index) {
+        public ListStudentIterator(int index) {
             cursor = index;
         }
 
@@ -315,7 +367,7 @@ public class StudentList implements List<Student> {
 
     private class SubList<E> extends AbstractList<Student>{
         private final StudentList root;
-        private final StudentList.SubList<Student> parent;
+        private final SubList<Student> parent;
         private final int offset;
         private int size;
 
@@ -326,7 +378,7 @@ public class StudentList implements List<Student> {
             this.size = toIndex - fromIndex;
         }
 
-        private SubList(StudentList.SubList<Student> parent, int fromIndex, int toIndex) {
+        private SubList(SubList<Student> parent, int fromIndex, int toIndex) {
             this.root = parent.root;
             this.parent = parent;
             this.offset = parent.offset + fromIndex;
@@ -334,14 +386,14 @@ public class StudentList implements List<Student> {
         }
 
         public Student set(int index, Student element) {
-            indexInRange(index);
+            indexInRange(index, size-1);
             Student oldValue = root.students[offset + index];
             root.students[offset + index] = element;
             return oldValue;
         }
 
         public Student get(int index) {
-            indexInRange(index);
+            indexInRange(index, size-1);
             return root.students[offset + index];
         }
 
@@ -350,20 +402,21 @@ public class StudentList implements List<Student> {
         }
 
         public void add(int index, Student element) {
-            indexInRange(index);
+            indexInRange(index, size);
             root.add(offset + index, element);
             updateSize(1);
         }
 
         public Student remove(int index) {
-            indexInRange(index);
+            indexInRange(index, size-1);
             Student result = root.remove(offset + index);
             updateSize(-1);
             return result;
         }
 
+        @SuppressWarnings("unchecked")
         private void updateSize(int sizeChange) {
-            StudentList.SubList<Student> slist = (SubList<Student>) this;
+            SubList<Student> slist = (SubList<Student>) this;
             do {
                 slist.size += sizeChange;
                 slist = slist.parent;
@@ -393,6 +446,7 @@ public class StudentList implements List<Student> {
             return indexOf(o) >= 0;
         }
 
+        @SuppressWarnings("unchecked")
         public List<Student> subList(int fromIndex, int toIndex) {
             if (fromIndex < 0 || toIndex > size)
                 throw new IndexOutOfBoundsException();
@@ -401,4 +455,5 @@ public class StudentList implements List<Student> {
             return new SubList<Student>((SubList<Student>) this, fromIndex, toIndex);
         }
     }
+
 }

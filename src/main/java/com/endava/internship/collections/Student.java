@@ -6,7 +6,7 @@ import java.util.Objects;
 /**
  * The class that defines the element that will be contained by your collection
  */
-public class Student //TODO consider implementing any interfaces necessary for your collection
+public class Student implements Comparable<Student>
 {
     private String name;
     private LocalDate dateOfBirth;
@@ -42,7 +42,16 @@ public class Student //TODO consider implementing any interfaces necessary for y
 
     @Override
     public int hashCode() {
-        return Objects.hash(name, dateOfBirth, details);
+        return Objects.hash(name, dateOfBirth);
+    }
+
+    @Override
+    public int compareTo(Student o) {
+        if(o!=null){
+            int ans = name.compareTo(o.getName());
+            return Integer.compare(ans, 0);
+        }
+        return 1;
     }
 
     @Override
