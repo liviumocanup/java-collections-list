@@ -13,8 +13,9 @@ public class StudentList implements List<Student> {
     }
 
     public StudentList(int capacity) {
-        if(capacity<0)
+        if (capacity < 0) {
             throw new IllegalArgumentException("Illegal Capacity: " + capacity);
+        }
         this.capacity = capacity;
         students = new Student[capacity];
     }
@@ -30,7 +31,7 @@ public class StudentList implements List<Student> {
 
     @Override
     public boolean isEmpty() {
-        return size==0;
+        return size == 0;
     }
 
     @Override
@@ -62,11 +63,12 @@ public class StudentList implements List<Student> {
         return true;
     }
 
-    private void checkCapacity(){
+    private void checkCapacity() {
         checkCapacity(1);
     }
-    private void checkCapacity(int min){
-        if(size+min >= capacity) {
+
+    private void checkCapacity(int min) {
+        if (size + min >= capacity) {
             if ((capacity * 2) > (size + min)) {
                 capacity *= 2;
             } else {
@@ -76,14 +78,14 @@ public class StudentList implements List<Student> {
         }
     }
 
-    private void resizeArray(){
+    private void resizeArray() {
         students = Arrays.copyOf(students, capacity);
     }
 
     @Override
     public boolean remove(Object o) {
         int indx = indexOf(o);
-        if(indx >= 0){
+        if (indx >= 0) {
             remove(indx);
             return true;
         }
@@ -92,7 +94,7 @@ public class StudentList implements List<Student> {
 
     @Override
     public void clear() {
-        for(int i=0; i<size; i++){
+        for (int i = 0; i < size; i++) {
             students[i] = null;
         }
         size = 0;
@@ -100,18 +102,19 @@ public class StudentList implements List<Student> {
 
     @Override
     public Student get(int i) {
-        indexInRange(i, size-1);
+        indexInRange(i, size - 1);
         return students[i];
     }
 
-    private void indexInRange(int i, int upperLimit){
-        if(i< 0 || i>upperLimit)
+    private void indexInRange(int i, int upperLimit) {
+        if (i < 0 || i > upperLimit) {
             throw new IndexOutOfBoundsException();
+        }
     }
 
     @Override
     public Student set(int i, Student student) {
-        indexInRange(i, size-1);
+        indexInRange(i, size - 1);
         Student replacedStudent = students[i];
         students[i] = student;
         return replacedStudent;
@@ -122,22 +125,22 @@ public class StudentList implements List<Student> {
         indexInRange(i, size);
         checkCapacity();
 
-        for(int k=size; k>i; k--){
-            students[k] = students[k-1];
+        for (int k = size; k > i; k--) {
+            students[k] = students[k - 1];
         }
-        students[i]=student;
+        students[i] = student;
         size++;
     }
 
     @Override
     public Student remove(int i) {
-        indexInRange(i, size-1);
+        indexInRange(i, size - 1);
         Student removedStudent = students[i];
 
-        for(int k=i; k<size-1; k++){
-            students[k]=students[k+1];
+        for (int k = i; k < size - 1; k++) {
+            students[k] = students[k + 1];
         }
-        students[size-1] = null;
+        students[size - 1] = null;
         size--;
         return removedStudent;
     }
@@ -153,30 +156,34 @@ public class StudentList implements List<Student> {
     }
 
     public int indexOfRange(Object o, int start, int end) {
-        if(o instanceof Student)
-            for(int i=start; i<end; i++){
-                if(students[i].equals(o))
+        if (o instanceof Student) {
+            for (int i = start; i < end; i++) {
+                if (students[i].equals(o)) {
                     return i;
+                }
             }
-        else if(o == null){
-            for(int i=start; i<end; i++){
-                if(students[i]==null)
+        } else if (o == null) {
+            for (int i = start; i < end; i++) {
+                if (students[i] == null) {
                     return i;
+                }
             }
         }
         return -1;
     }
 
     public int lastIndexOfRange(Object o, int start, int end) {
-        if(o instanceof Student)
-            for(int i=end-1; i>=start; i--){
-                if(students[i].equals(o))
+        if (o instanceof Student) {
+            for (int i = end - 1; i >= start; i--) {
+                if (students[i].equals(o)) {
                     return i;
+                }
             }
-        else if(o == null){
-            for(int i=end-1; i>=start; i--){
-                if(students[i]==null)
+        } else if (o == null) {
+            for (int i = end - 1; i >= start; i--) {
+                if (students[i] == null) {
                     return i;
+                }
             }
         }
         return -1;
@@ -188,16 +195,17 @@ public class StudentList implements List<Student> {
 
     @Override
     public ListIterator<Student> listIterator(int i) {
-        indexInRange(i, size-1);
+        indexInRange(i, size - 1);
         return new ListStudentIterator(i);
     }
 
     @Override
     public List<Student> subList(int i, int i1) {
-        if (i < 0 || i1 > size)
+        if (i < 0 || i1 > size) {
             throw new IndexOutOfBoundsException();
-        else if(i>i1)
+        } else if (i > i1) {
             throw new IllegalArgumentException();
+        }
         return new SubList<>(this, i, i1);
     }
 
@@ -205,14 +213,14 @@ public class StudentList implements List<Student> {
     public boolean addAll(Collection<? extends Student> collection) {
         Student[] c = collection.toArray(new Student[0]);
         int len = c.length;
-        if(len == 0){
+        if (len == 0) {
             return false;
         }
 
         checkCapacity(len);
 
-        for(int i=size; i < size+len; i++){
-            students[i] = c[i-size];
+        for (int i = size; i < size + len; i++) {
+            students[i] = c[i - size];
         }
         size += len;
         return true;
@@ -221,8 +229,9 @@ public class StudentList implements List<Student> {
     @Override
     public boolean containsAll(Collection<?> collection) {
         for (Object o : collection) {
-            if (indexOf(o) < 0)
+            if (indexOf(o) < 0) {
                 return false;
+            }
         }
         return true;
     }
@@ -231,20 +240,20 @@ public class StudentList implements List<Student> {
     public boolean addAll(int i, Collection<? extends Student> collection) {
         Student[] c = collection.toArray(new Student[0]);
         int len = c.length;
-        if(len == 0){
+        if (len == 0) {
             return false;
         }
 
         indexInRange(i, size);
         checkCapacity(len);
 
-        for(int times = 0; times < len; times++) {
+        for (int times = 0; times < len; times++) {
             for (int k = size + len; k > i; k--) {
                 students[k] = students[k - 1];
             }
         }
-        for(int k = i; k < i+len; k++){
-            students[k] = c[k-i];
+        for (int k = i; k < i + len; k++) {
+            students[k] = c[k - i];
         }
 
         size += len;
@@ -255,7 +264,7 @@ public class StudentList implements List<Student> {
     public boolean removeAll(Collection<?> collection) {
         boolean listChanged = false;
         for (Object o : collection) {
-            if(indexOf(o)>=0) {
+            if (indexOf(o) >= 0) {
                 remove(o);
                 listChanged = true;
             }
@@ -269,15 +278,15 @@ public class StudentList implements List<Student> {
         StudentList toExclude = new StudentList();
 
         for (Student s : students) {
-            for(Object o : collection){
+            for (Object o : collection) {
                 if (s.equals(o)) {
                     contained = true;
                     break;
                 }
             }
-            if(!contained){
+            if (!contained) {
                 toExclude.add(s);
-            }else contained = false;
+            } else contained = false;
         }
 
         return removeAll(toExclude);
@@ -285,14 +294,10 @@ public class StudentList implements List<Student> {
 
     @Override
     public String toString() {
-        return "StudentList{" +
-                "size=" + size +
-                ", capacity=" + capacity +
-                ", students=" + Arrays.toString(Arrays.copyOf(students, size)) +
-                '}';
+        return "StudentList{" + "size=" + size + ", capacity=" + capacity + ", students=" + Arrays.toString(Arrays.copyOf(students, size)) + '}';
     }
 
-    private class StudentIterator implements Iterator<Student>{
+    private class StudentIterator implements Iterator<Student> {
         int cursor;
 
         StudentIterator() {
@@ -300,27 +305,29 @@ public class StudentList implements List<Student> {
 
         @Override
         public boolean hasNext() {
-            return cursor<size;
+            return cursor < size;
         }
 
         @Override
         public Student next() {
-            if (!hasNext())
+            if (!hasNext()) {
                 throw new NoSuchElementException();
+            }
             return students[cursor++];
         }
 
         @Override
         public void remove() {
-            if (cursor-1 < 0)
+            if (cursor - 1 < 0) {
                 throw new IllegalStateException();
+            }
 
-            StudentList.this.remove(cursor-1);
+            StudentList.this.remove(cursor - 1);
             cursor--;
         }
     }
 
-    private class ListStudentIterator extends StudentIterator implements ListIterator<Student>{
+    private class ListStudentIterator extends StudentIterator implements ListIterator<Student> {
         public ListStudentIterator() {
         }
 
@@ -330,13 +337,14 @@ public class StudentList implements List<Student> {
 
         @Override
         public boolean hasPrevious() {
-            return cursor>0;
+            return cursor > 0;
         }
 
         @Override
         public Student previous() {
-            if (cursor-1 < 0)
+            if (cursor - 1 < 0) {
                 throw new NoSuchElementException();
+            }
             return students[cursor--];
         }
 
@@ -347,15 +355,16 @@ public class StudentList implements List<Student> {
 
         @Override
         public int previousIndex() {
-            return cursor-1;
+            return cursor - 1;
         }
 
         @Override
         public void set(Student student) {
-            if (cursor-1 < 0)
+            if (cursor - 1 < 0) {
                 throw new IllegalStateException();
+            }
 
-            StudentList.this.set(cursor-1, student);
+            StudentList.this.set(cursor - 1, student);
         }
 
         @Override
@@ -365,7 +374,7 @@ public class StudentList implements List<Student> {
         }
     }
 
-    private class SubList<E> extends AbstractList<Student>{
+    private class SubList<E> extends AbstractList<Student> {
         private final StudentList root;
         private final SubList<Student> parent;
         private final int offset;
@@ -386,14 +395,14 @@ public class StudentList implements List<Student> {
         }
 
         public Student set(int index, Student element) {
-            indexInRange(index, size-1);
+            indexInRange(index, size - 1);
             Student oldValue = root.students[offset + index];
             root.students[offset + index] = element;
             return oldValue;
         }
 
         public Student get(int index) {
-            indexInRange(index, size-1);
+            indexInRange(index, size - 1);
             return root.students[offset + index];
         }
 
@@ -408,7 +417,7 @@ public class StudentList implements List<Student> {
         }
 
         public Student remove(int index) {
-            indexInRange(index, size-1);
+            indexInRange(index, size - 1);
             Student result = root.remove(offset + index);
             updateSize(-1);
             return result;
@@ -448,10 +457,11 @@ public class StudentList implements List<Student> {
 
         @SuppressWarnings("unchecked")
         public List<Student> subList(int fromIndex, int toIndex) {
-            if (fromIndex < 0 || toIndex > size)
+            if (fromIndex < 0 || toIndex > size) {
                 throw new IndexOutOfBoundsException();
-            else if(fromIndex>toIndex)
+            } else if (fromIndex > toIndex) {
                 throw new IllegalArgumentException();
+            }
             return new SubList<Student>((SubList<Student>) this, fromIndex, toIndex);
         }
     }

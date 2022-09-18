@@ -6,8 +6,7 @@ import java.util.Objects;
 /**
  * The class that defines the element that will be contained by your collection
  */
-public class Student implements Comparable<Student>
-{
+public class Student implements Comparable<Student> {
     private String name;
     private LocalDate dateOfBirth;
     private String details;
@@ -18,11 +17,17 @@ public class Student implements Comparable<Student>
         this.details = details;
     }
 
-    public String getName() { return name; }
+    public String getName() {
+        return name;
+    }
 
-    public LocalDate getDateOfBirth() { return dateOfBirth; }
+    public LocalDate getDateOfBirth() {
+        return dateOfBirth;
+    }
 
-    public String getDetails() { return details; }
+    public String getDetails() {
+        return details;
+    }
 
     /*
     TODO consider overriding any methods for this object to function properly within a collection:
@@ -47,7 +52,7 @@ public class Student implements Comparable<Student>
 
     @Override
     public int compareTo(Student o) {
-        if(o!=null){
+        if (o != null) {
             int ans = name.compareTo(o.getName());
             return Integer.compare(ans, 0);
         }
