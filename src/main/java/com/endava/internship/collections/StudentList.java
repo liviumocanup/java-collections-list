@@ -155,10 +155,10 @@ public class StudentList implements List<Student> {
         return lastIndexOfRange(o, 0, size);
     }
 
-    public int indexOfRange(Object o, int start, int end) {
+    private int indexOfRange(Object o, int start, int end) {
         if (o instanceof Student) {
             for (int i = start; i < end; i++) {
-                if (students[i].equals(o)) {
+                if (students[i] != null && students[i].equals(o)) {
                     return i;
                 }
             }
@@ -172,10 +172,10 @@ public class StudentList implements List<Student> {
         return -1;
     }
 
-    public int lastIndexOfRange(Object o, int start, int end) {
+    private int lastIndexOfRange(Object o, int start, int end) {
         if (o instanceof Student) {
             for (int i = end - 1; i >= start; i--) {
-                if (students[i].equals(o)) {
+                if (students[i] != null && students[i].equals(o)) {
                     return i;
                 }
             }
@@ -213,6 +213,8 @@ public class StudentList implements List<Student> {
     public boolean addAll(Collection<? extends Student> collection) {
         Student[] c = collection.toArray(new Student[0]);
         int len = c.length;
+        students = new Student[len];
+
         if (len == 0) {
             return false;
         }
