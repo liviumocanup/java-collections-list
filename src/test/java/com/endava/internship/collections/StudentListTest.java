@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class StudentListTest {
     private StudentList studentList;
     private final Student student1 = new Student("Bobby", LocalDate.of(2001, 5, 26), "loser");
@@ -670,7 +671,7 @@ public class StudentListTest {
         List<Student> sub;
 
         @BeforeEach
-        void setUp(){
+        void setUp() {
             studentList.add(student1);
             studentList.add(student2);
             studentList.add(student3);
@@ -681,32 +682,32 @@ public class StudentListTest {
         }
 
         @Test
-        void testConstructorWithOutOfBoundsIndexForLowerBoundary(){
+        void testConstructorWithOutOfBoundsIndexForLowerBoundary() {
             assertThrows(IndexOutOfBoundsException.class, () -> studentList.subList(-1, 3));
         }
 
         @Test
-        void testConstructorWithOutOfBoundsIndexForUpperBoundary(){
+        void testConstructorWithOutOfBoundsIndexForUpperBoundary() {
             assertThrows(IndexOutOfBoundsException.class, () -> studentList.subList(1, 12));
         }
 
         @Test
-        void testConstructorWithIllegalArguments(){
+        void testConstructorWithIllegalArguments() {
             assertThrows(IllegalArgumentException.class, () -> studentList.subList(3, 1));
         }
 
         @Test
-        void testDefaultConstructor(){
+        void testDefaultConstructor() {
             assertArrayEquals(copyListView(1, 3), sub.toArray());
         }
 
         @Test
-        void testSetForOutOfBoundsIndex(){
+        void testSetForOutOfBoundsIndex() {
             assertThrows(IndexOutOfBoundsException.class, () -> sub.set(3, student1));
         }
 
         @Test
-        void testSetReturnAndChangingOriginalListValues(){
+        void testSetReturnAndChangingOriginalListValues() {
             assertEquals(student2, sub.set(0, student1));
             assertEquals(student3, sub.set(1, student5));
 
@@ -714,7 +715,7 @@ public class StudentListTest {
         }
 
         @Test
-        void testAddChangingOriginalListValues(){
+        void testAddChangingOriginalListValues() {
             sub.add(0, student5);
             sub.add(1, student4);
             sub.add(4, student1);
@@ -723,16 +724,16 @@ public class StudentListTest {
             assertArrayEquals(copyListView(1, 6), sub.toArray());
         }
 
-        Student[] copyListView(int startIndex, int endIndex){
-            Student[] s = new Student[endIndex-startIndex];
-            for(int i=startIndex; i<endIndex; i++){
-                s[i-startIndex] = studentList.get(i);
+        Student[] copyListView(int startIndex, int endIndex) {
+            Student[] s = new Student[endIndex - startIndex];
+            for (int i = startIndex; i < endIndex; i++) {
+                s[i - startIndex] = studentList.get(i);
             }
             return s;
         }
 
         @Test
-        void testRemoveChangingOriginalListValues(){
+        void testRemoveChangingOriginalListValues() {
             sub.remove(0);
             sub.remove(0);
 
@@ -743,18 +744,18 @@ public class StudentListTest {
         }
 
         @Test
-        void testGet(){
+        void testGet() {
             assertEquals(student2, sub.get(0));
             assertEquals(student3, sub.get(1));
         }
 
         @Test
-        void testSize(){
+        void testSize() {
             assertEquals(2, sub.size());
         }
 
         @Test
-        void testSizeAfterAdd(){
+        void testSizeAfterAdd() {
             sub.add(1, student3);
 
             assertEquals(3, sub.size());
@@ -762,7 +763,7 @@ public class StudentListTest {
 
         @Test
         void testIndexOfInEmptyList() {
-            sub = studentList.subList(1,1);
+            sub = studentList.subList(1, 1);
             assertEquals(-1, sub.indexOf(null));
         }
 
@@ -773,7 +774,7 @@ public class StudentListTest {
 
         @Test
         void testIndexOfWithNull() {
-            sub.add(1,null);
+            sub.add(1, null);
 
             assertEquals(1, sub.indexOf(null));
         }
@@ -788,7 +789,7 @@ public class StudentListTest {
 
         @Test
         void testLastIndexOfInEmptyList() {
-            sub = studentList.subList(1,1);
+            sub = studentList.subList(1, 1);
             assertEquals(-1, sub.lastIndexOf(null));
         }
 
@@ -799,7 +800,7 @@ public class StudentListTest {
 
         @Test
         void testLastIndexOfWithNull() {
-            sub.add(1,null);
+            sub.add(1, null);
 
             assertEquals(1, sub.lastIndexOf(null));
         }
@@ -839,19 +840,19 @@ public class StudentListTest {
         }
 
         @Test
-        void testSubListOfSubList(){
+        void testSubListOfSubList() {
             sub = studentList.subList(1, 5);
-            List<Student> subsub = sub.subList(1,3);
+            List<Student> subsub = sub.subList(1, 3);
 
             subsub.add(1, new Student("", null, ""));
 
-            assertArrayEquals(copyListView(1,6), sub.toArray());
-            assertArrayEquals(copyListView(2,5), subsub.toArray());
+            assertArrayEquals(copyListView(1, 6), sub.toArray());
+            assertArrayEquals(copyListView(2, 5), subsub.toArray());
         }
     }
 
     @Test
-    void testAddAllFiveElementsInZeroCapacityList(){
+    void testAddAllFiveElementsInZeroCapacityList() {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student1, student2, student3, student4, student5);
 
@@ -862,13 +863,192 @@ public class StudentListTest {
     }
 
     @Test
-    void testContainsAllTwoElementsInZeroCapacityList(){
+    void testContainsAllTwoElementsAndAdditionalElements() {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student1, student2);
 
         studentList = new StudentList(a);
+        studentList.add(0, student4);
+        studentList.add(student5);
 
         assertTrue(studentList.containsAll(a));
+    }
+
+    @Test
+    void testContainsAllWithTwoElementsWhereOneNotPresent() {
+        List<Student> a = new ArrayList<>();
+        Collections.addAll(a, student1, student2);
+
+        studentList = new StudentList();
+        studentList.add(student1);
+        studentList.add(student4);
+        studentList.add(student5);
+
+        assertFalse(studentList.containsAll(a));
+    }
+
+    @Test
+    void testContainsAllOnEmptyCollection() {
+        studentList = new StudentList();
+        studentList.add(student1);
+        studentList.add(student4);
+        studentList.add(student5);
+
+        assertTrue(studentList.containsAll(new ArrayList<Student>()));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideStudentsForAddAll")
+    void testAddAllOnIndexZero(Student expectedStudent, int position) {
+        List<Student> a = new ArrayList<>();
+        Collections.addAll(a, student1, student2);
+
+        studentList = new StudentList();
+        Collections.addAll(studentList, student3, student4, student5);
+
+        assertTrue(studentList.addAll(0, a));
+        assertTrue(studentList.containsAll(a));
+        assertEquals(expectedStudent, studentList.get(position));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideStudentsForAddAll")
+    void testAddAllOnLastIndex(Student expectedStudent, int position) {
+        List<Student> a = new ArrayList<>();
+        Collections.addAll(a, student4, student5);
+
+        studentList = new StudentList();
+        Collections.addAll(studentList, student1, student2, student3);
+
+        assertTrue(studentList.addAll(studentList.size(), a));
+        assertTrue(studentList.containsAll(a));
+        assertEquals(expectedStudent, studentList.get(position));
+    }
+
+    @ParameterizedTest
+    @MethodSource("provideStudentsForAddAll")
+    void testAddAllOnMiddleIndex(Student expectedStudent, int position) {
+        List<Student> a = new ArrayList<>();
+        Collections.addAll(a, student2, student3, student4, student5);
+
+        studentList = new StudentList();
+        Collections.addAll(studentList, student1);
+
+        assertTrue(studentList.addAll(1, a));
+        assertTrue(studentList.containsAll(a));
+        assertEquals(expectedStudent, studentList.get(position));
+    }
+
+    private Stream<Arguments> provideStudentsForAddAll() {
+        return Stream.of(
+                Arguments.of(student1, 0),
+                Arguments.of(student2, 1),
+                Arguments.of(student3, 2),
+                Arguments.of(student4, 3),
+                Arguments.of(student5, 4));
+    }
+
+    @Test
+    void testRemoveAllOnEmptyList() {
+        List<Student> a = new ArrayList<>();
+        a.add(student2);
+
+        assertFalse(studentList.removeAll(a));
+    }
+
+    @Test
+    void testRemoveAllFromEmptyCollection() {
+        studentList.add(student2);
+
+        assertFalse(studentList.removeAll(new ArrayList<Student>()));
+    }
+
+    @Test
+    void testRemoveAllNoCommonElements() {
+        List<Student> a = new ArrayList<>();
+        Collections.addAll(a, student1, student2);
+
+        studentList = new StudentList();
+        Collections.addAll(studentList, student3, student4, student5);
+
+        assertFalse(studentList.removeAll(a));
+    }
+
+    @Test
+    void testRemoveAllSomeCommonElements() {
+        List<Student> a = new ArrayList<>();
+        Collections.addAll(a, student1, student2);
+
+        studentList = new StudentList();
+        Collections.addAll(studentList, student1, student4, student2);
+
+        assertTrue(studentList.removeAll(a));
+        assertThat(studentList).contains(student4)
+                .doesNotContain(student1, student2);
+    }
+
+    @Test
+    void testRemoveAllCommonElements() {
+        List<Student> a = new ArrayList<>();
+        Collections.addAll(a, student1, student2);
+
+        studentList = new StudentList();
+        Collections.addAll(studentList, student1, student2);
+
+        assertTrue(studentList.removeAll(a));
+        assertTrue(studentList.isEmpty());
+    }
+
+    @Test
+    void testRetainAllContained() {
+        List<Student> a = new ArrayList<>();
+        Collections.addAll(a, student1, student2);
+
+        studentList = new StudentList();
+        Collections.addAll(studentList, student1, student4, student2, student1);
+
+        assertTrue(studentList.retainAll(a));
+        assertEquals(3, studentList.size());
+        assertArrayEquals(a.toArray(), studentList.subList(0, 2).toArray());
+    }
+
+    @Test
+    void testRetainAllNoCommonElements() {
+        List<Student> a = new ArrayList<>();
+        Collections.addAll(a, student1, student2);
+
+        studentList = new StudentList();
+        Collections.addAll(studentList, student1, student2);
+
+        assertFalse(studentList.retainAll(a));
         assertArrayEquals(a.toArray(), studentList.toArray());
+    }
+
+    @Test
+    void testRetainAllWhenListHasSameElementsAsCollection() {
+        List<Student> a = new ArrayList<>();
+        Collections.addAll(a, student1);
+
+        studentList = new StudentList();
+        Collections.addAll(studentList, student2);
+
+        assertTrue(studentList.retainAll(a));
+        assertTrue(studentList.isEmpty());
+    }
+
+    @Test
+    void testToStringOnEmptyList() {
+        String expected = "StudentList{size=" + studentList.size() + ", capacity=" + 10 + ", students=" + Arrays.toString(new Student[0]) + '}';
+        assertEquals(expected, studentList.toString());
+    }
+
+    @Test
+    void testToStringWithElement() {
+        Student[] s = new Student[1];
+        s[0] = student1;
+        studentList.add(student1);
+        String expected = "StudentList{size=" + studentList.size() + ", capacity=" + 10 + ", students=" + Arrays.toString(s) + '}';
+
+        assertEquals(expected, studentList.toString());
     }
 }

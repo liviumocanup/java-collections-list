@@ -21,6 +21,7 @@ public class StudentList implements List<Student> {
     }
 
     public StudentList(Collection<Student> studentsCollection) {
+        students = new Student[studentsCollection.size() + 10];
         addAll(studentsCollection);
     }
 
@@ -213,7 +214,6 @@ public class StudentList implements List<Student> {
     public boolean addAll(Collection<? extends Student> collection) {
         Student[] c = collection.toArray(new Student[0]);
         int len = c.length;
-        students = new Student[len];
 
         if (len == 0) {
             return false;
@@ -281,7 +281,7 @@ public class StudentList implements List<Student> {
 
         for (Student s : students) {
             for (Object o : collection) {
-                if (s.equals(o)) {
+                if (Objects.equals(s, o)) {
                     contained = true;
                     break;
                 }
