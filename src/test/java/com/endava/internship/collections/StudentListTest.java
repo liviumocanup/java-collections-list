@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class StudentListTest {
-    private StudentList studentList;
+    private StudentList<Student> studentList;
     private final Student student1 = new Student("Bobby", LocalDate.of(2001, 5, 26), "loser");
     private final Student student2 = new Student("Bob", LocalDate.of(2000, 5, 26), "chad");
     private final Student student3 = new Student("Val", LocalDate.of(2002, 5, 26), "nothing");
@@ -26,18 +26,18 @@ public class StudentListTest {
 
     @BeforeEach
     void setUp() {
-        studentList = new StudentList();
+        studentList = new StudentList<>();
     }
 
     @Test
     void testConstructorThrowsExceptionForNegativeCapacity() {
-        Throwable exceptionThatWasThrown = assertThrows(IllegalArgumentException.class, () -> new StudentList(-2));
+        Throwable exceptionThatWasThrown = assertThrows(IllegalArgumentException.class, () -> new StudentList<>(-2));
         assertEquals(exceptionThatWasThrown.getMessage(), "Illegal Capacity: " + "-2");
     }
 
     @Test
     void testConstructorZeroCapacity() {
-        studentList = new StudentList(0);
+        studentList = new StudentList<>(0);
         assertEquals(0, studentList.size());
     }
 
@@ -47,7 +47,7 @@ public class StudentListTest {
         s.add(student1);
         s.add(student2);
 
-        studentList = new StudentList(s);
+        studentList = new StudentList<>(s);
 
         assertEquals(2, studentList.size());
         assertArrayEquals(s.toArray(), studentList.toArray());
@@ -263,7 +263,7 @@ public class StudentListTest {
 
     @Test
     void testAddOneElementInOneCapacityList() {
-        studentList = new StudentList(1);
+        studentList = new StudentList<>(1);
         studentList.add(student1);
 
         List<Student> s = new ArrayList<>();
@@ -293,7 +293,7 @@ public class StudentListTest {
 
     @Test
     void testAddTwoElementsInOneCapacityList() {
-        studentList = new StudentList(1);
+        studentList = new StudentList<>(1);
         studentList.add(student1);
         studentList.add(student2);
 
@@ -447,7 +447,7 @@ public class StudentListTest {
 
     @Test
     void testAddOnIndexInTwoElementList() {
-        studentList = new StudentList(2);
+        studentList = new StudentList<>(2);
         studentList.add(student1);
         studentList.add(student2);
         studentList.add(1, student3);
@@ -856,7 +856,7 @@ public class StudentListTest {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student1, student2, student3, student4, student5);
 
-        studentList = new StudentList(0);
+        studentList = new StudentList<>(0);
         studentList.addAll(a);
 
         assertArrayEquals(a.toArray(), studentList.toArray());
@@ -867,7 +867,7 @@ public class StudentListTest {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student1, student2);
 
-        studentList = new StudentList(a);
+        studentList = new StudentList<>(a);
         studentList.add(0, student4);
         studentList.add(student5);
 
@@ -879,7 +879,7 @@ public class StudentListTest {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student1, student2);
 
-        studentList = new StudentList();
+        studentList = new StudentList<>();
         studentList.add(student1);
         studentList.add(student4);
         studentList.add(student5);
@@ -889,7 +889,7 @@ public class StudentListTest {
 
     @Test
     void testContainsAllOnEmptyCollection() {
-        studentList = new StudentList();
+        studentList = new StudentList<>();
         studentList.add(student1);
         studentList.add(student4);
         studentList.add(student5);
@@ -903,7 +903,7 @@ public class StudentListTest {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student1, student2);
 
-        studentList = new StudentList();
+        studentList = new StudentList<>();
         Collections.addAll(studentList, student3, student4, student5);
 
         assertTrue(studentList.addAll(0, a));
@@ -917,7 +917,7 @@ public class StudentListTest {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student4, student5);
 
-        studentList = new StudentList();
+        studentList = new StudentList<>();
         Collections.addAll(studentList, student1, student2, student3);
 
         assertTrue(studentList.addAll(studentList.size(), a));
@@ -931,7 +931,7 @@ public class StudentListTest {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student2, student3, student4, student5);
 
-        studentList = new StudentList();
+        studentList = new StudentList<>();
         Collections.addAll(studentList, student1);
 
         assertTrue(studentList.addAll(1, a));
@@ -968,7 +968,7 @@ public class StudentListTest {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student1, student2);
 
-        studentList = new StudentList();
+        studentList = new StudentList<>();
         Collections.addAll(studentList, student3, student4, student5);
 
         assertFalse(studentList.removeAll(a));
@@ -979,7 +979,7 @@ public class StudentListTest {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student1, student2);
 
-        studentList = new StudentList();
+        studentList = new StudentList<>();
         Collections.addAll(studentList, student1, student4, student2);
 
         assertTrue(studentList.removeAll(a));
@@ -992,7 +992,7 @@ public class StudentListTest {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student1, student2);
 
-        studentList = new StudentList();
+        studentList = new StudentList<>();
         Collections.addAll(studentList, student1, student2);
 
         assertTrue(studentList.removeAll(a));
@@ -1004,7 +1004,7 @@ public class StudentListTest {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student1, student2);
 
-        studentList = new StudentList();
+        studentList = new StudentList<>();
         Collections.addAll(studentList, student1, student4, student2, student1);
 
         assertTrue(studentList.retainAll(a));
@@ -1017,7 +1017,7 @@ public class StudentListTest {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student1, student2);
 
-        studentList = new StudentList();
+        studentList = new StudentList<>();
         Collections.addAll(studentList, student1, student2);
 
         assertFalse(studentList.retainAll(a));
@@ -1029,7 +1029,7 @@ public class StudentListTest {
         List<Student> a = new ArrayList<>();
         Collections.addAll(a, student1);
 
-        studentList = new StudentList();
+        studentList = new StudentList<>();
         Collections.addAll(studentList, student2);
 
         assertTrue(studentList.retainAll(a));
