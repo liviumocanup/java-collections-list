@@ -86,7 +86,7 @@ public class StudentListTest {
     }
 
     @Test
-    void testIsEmptyAfterAdd() {
+    void testIsNotEmptyAfterAdd() {
         studentList.add(student1);
 
         assertFalse(studentList.isEmpty());
@@ -96,9 +96,11 @@ public class StudentListTest {
     void testIsEmptyAfterAddAndRemove() {
         studentList.add(student1);
         studentList.add(student2);
+        int sizeBeforeRemoving = studentList.size();
         studentList.remove(student1);
         studentList.remove(student2);
 
+        assertEquals(2, sizeBeforeRemoving);
         assertEquals(0, studentList.size());
         assertTrue(studentList.isEmpty());
     }
@@ -133,12 +135,14 @@ public class StudentListTest {
     @Test
     void testContainsOnRemovedElement() {
         studentList.add(null);
-        studentList.remove(null);
         studentList.add(student1);
-        studentList.remove(student1);
 
+        assertEquals(2, studentList.size());
+        assertTrue(studentList.remove(null));
+        assertTrue(studentList.remove(student1));
         assertFalse(studentList.contains(null));
         assertFalse(studentList.contains(student1));
+        assertTrue(studentList.isEmpty());
     }
 
     @Nested
