@@ -50,6 +50,8 @@ public class StudentListTest {
         studentList = new StudentList<>(s);
 
         assertEquals(2, studentList.size());
+        assertEquals(student1, studentList.get(0));
+        assertEquals(student2, studentList.get(1));
         assertArrayEquals(s.toArray(), studentList.toArray());
     }
 
@@ -70,8 +72,10 @@ public class StudentListTest {
     @Test
     void testSizeAfterAddAndRemove() {
         studentList.add(student1);
+        int sizeAfterAdd = studentList.size();
         studentList.remove(student1);
 
+        assertEquals(1, sizeAfterAdd);
         assertEquals(0, studentList.size());
     }
 
@@ -324,6 +328,8 @@ public class StudentListTest {
         studentList.add(student2);
 
         assertFalse(studentList.remove(student1));
+        assertThat(studentList).hasSize(1)
+                .contains(student2);
     }
 
     @Test
@@ -331,6 +337,8 @@ public class StudentListTest {
         studentList.add(student2);
 
         assertFalse(studentList.remove(null));
+        assertThat(studentList).hasSize(1)
+                .contains(student2);
     }
 
     @Test
@@ -338,10 +346,12 @@ public class StudentListTest {
         studentList.add(null);
 
         assertTrue(studentList.remove(null));
+        assertThat(studentList).hasSize(0)
+                .doesNotContain((Student) null);
     }
 
     @Test
-    void testRemoveDuplicateAndNull() {
+    void testRemoveAbleToRemoveMoreInstancesOfSameObjectOrNull() {
         studentList.add(student1);
         studentList.add(student1);
         studentList.add(student2);
@@ -369,8 +379,8 @@ public class StudentListTest {
 
         assertThat(studentList).hasSize(0)
                 .doesNotContain(student1);
-        assertEquals(Arrays.toString(a.toArray()), Arrays.toString(studentList.toArray()));
-        assertEquals(Arrays.toString(new Student[0]), Arrays.toString(studentList.toArray()));
+        assertArrayEquals(a.toArray(), studentList.toArray());
+        assertArrayEquals(new Student[0], studentList.toArray());
     }
 
     @Test
@@ -415,16 +425,19 @@ public class StudentListTest {
 
         assertEquals(student1, studentList.set(0, student2));
         assertEquals(student2, studentList.get(0));
+        assertEquals(1, studentList.size());
     }
 
     @Test
-    void testSetOnTwoElementList() {
+    void testSetAtTheEndOfTwoElementList() {
         studentList.add(student1);
         studentList.add(student2);
 
-        assertEquals(student1, studentList.set(0, student2));
-        assertEquals(student2, studentList.get(0));
-        assertFalse(studentList.contains(student1));
+        assertEquals(student2, studentList.set(1, student3));
+        assertEquals(student1, studentList.get(0));
+        assertEquals(student3, studentList.get(1));
+        assertThat(studentList).hasSize(2)
+                .doesNotContain(student2);
     }
 
     @Test
